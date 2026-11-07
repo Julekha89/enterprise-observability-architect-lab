@@ -1,39 +1,100 @@
-﻿# Enterprise Observability Lab — Low-Level Design
+﻿# Enterprise Observability Architect Lab - Low-Level Design
 
 ## Runtime
-Operating system: Windows
-Python: 3.14.5
-Project root: D:\Enterprise-Observability-Architect-Lab
 
-## Planned Components
-Application server: Python HTTP server
-Monitoring probes: Python standard library
-Database: SQLite
-Dashboard: Local Python HTTP interface
+Operating System: Windows
+Python: 3.14
+Project Root: D:\Enterprise-Observability-Architect-Lab
 
-## Planned Endpoints
-Application: http://127.0.0.1:8765
-Dashboard: http://127.0.0.1:8766
+## Application
 
-## Monitoring Design
-HTTP availability: Every 30 seconds
-DNS resolution: Every 60 seconds
-Connectivity: Every 30 seconds
+Health Endpoint:
+http://127.0.0.1:8765/health
 
-## Initial Alert Policy
-HTTP failure: 3 consecutive failed checks
-HTTP latency warning: Greater than 500 ms
-HTTP latency critical: Greater than 1000 ms
+## HTTP Monitoring
+
+Source: probes/http_monitor.py
+Target: Local application health endpoint
+Interval: 30 seconds
+Storage: data/http_metrics.csv
+
+Recorded Fields:
+- timestamp_utc
+- status
+- latency_ms
+- error
+
+## DNS Monitoring
+
+Source: probes/dns_monitor.py
+Target Domain: example.com
+Interval: 30 seconds
+Storage: data/dns_metrics.csv
+
+## Dashboard V4
+
+Source: dashboard/dashboard_server_v4.py
+Local URL: http://127.0.0.1:8769
+REST Endpoint: /api/status
+Browser Refresh: 10 seconds
+
+Dashboard Features:
+- HTTP and DNS health
+- Success-rate calculations
+- Latest response and resolution times
+- Collection freshness
+- Incident counts and history
+- Recent monitoring checks
+- Response-time trend charts
+
+## Incident Detection
+
+Threshold: 3 consecutive DOWN checks
+Severity: CRITICAL
+Recovery: Subsequent UP check
+Freshness Threshold: 90 seconds
+
+Dashboard V4 calculates incident history from CSV records.
+
+Standalone incident_engine.py analyzes HTTP incidents separately.
+
+## Failure Correlation
+
+Source: incidents/correlation_engine.py
+
+Inputs:
+- data/http_metrics.csv
+- data/dns_metrics.csv
+
+Analysis:
+- Identify failure windows
+- Compare overlapping failures
+- Distinguish HTTP-only and DNS-only failure periods
+- Produce diagnostic hypotheses
+
+The correlation engine is standalone and is not currently integrated into Dashboard V4.
+
+## Data Storage
+
+HTTP Metrics: data/http_metrics.csv
+DNS Metrics: data/dns_metrics.csv
+
+Both files are local historical records and excluded from Git.
 
 ## Safety Controls
-- Bind services to 127.0.0.1 only
-- Check ports before starting services
-- Never overwrite existing project files
+
+- Preserve historical monitoring data
+- Do not overwrite CSV files
 - Do not modify Docker or WSL2
-- Use synthetic test data only
+- Do not modify other applications
+- Avoid production credentials
+- Keep the environment local
 
 ## Validation
-- Verify HTTP endpoint availability
-- Verify monitoring results are recorded
-- Simulate controlled application failure
-- Verify alert generation and recovery
+
+- Verify application health endpoint
+- Verify HTTP and DNS probes
+- Verify CSV metrics collection
+- Verify dashboard REST API
+- Verify incident detection and recovery
+- Verify failure correlation
