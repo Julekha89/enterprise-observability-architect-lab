@@ -58,3 +58,9 @@ Correlation results provide diagnostic hypotheses rather than definitive root-ca
 - Structured incident reports
 - Alert notifications
 - Additional monitoring signals
+
+## Dashboard V4 Preview
+
+Enterprise Observability Dashboard V4 provides synthetic HTTP and DNS monitoring, health status, response-time trends, collection freshness, and incident tracking.
+
+![Enterprise Observability Dashboard V4](docs/screenshots/dashboard-v4.png)
