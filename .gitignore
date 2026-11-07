@@ -1,0 +1,16 @@
+﻿__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+data/*.csv
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+dashboard/dashboard_server.py
+dashboard/dashboard_server_phase7_1_backup.py
+dashboard/dashboard_server_v2.py
+dashboard/dashboard_server_v3.py
