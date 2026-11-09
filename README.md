@@ -1,4 +1,4 @@
-﻿# Enterprise Observability Architect Lab
+# Enterprise Observability Architect Lab
 
 A Python-based synthetic observability project for HTTP and DNS monitoring, incident detection, failure correlation, and dashboard visualization.
 
@@ -64,3 +64,27 @@ Correlation results provide diagnostic hypotheses rather than definitive root-ca
 Enterprise Observability Dashboard V4 provides synthetic HTTP and DNS monitoring, health status, response-time trends, collection freshness, and incident tracking.
 
 ![Enterprise Observability Dashboard V4](docs/screenshots/dashboard-v4.png)
+
+
+## System Architecture
+
+```mermaid
+flowchart TD
+    APP["Local HTTP Application :8765"] --> HTTP["HTTP Monitoring Probe"]
+    DNS["DNS Resolution: example.com"] --> DNSPROBE["DNS Monitoring Probe"]
+
+    HTTP --> HTTPCSV["HTTP Metrics CSV"]
+    DNSPROBE --> DNSCSV["DNS Metrics CSV"]
+
+    HTTPCSV --> DASH["Dashboard V4 :8769"]
+    DNSCSV --> DASH
+
+    HTTPCSV --> INCIDENT["Standalone Incident Engine"]
+
+    HTTPCSV --> CORR["Standalone Correlation Engine"]
+    DNSCSV --> CORR
+
+    DASH --> API["Local REST API /api/status"]
+```
+
+The dashboard calculates health, availability, freshness, and incident history directly from CSV records. The standalone incident and correlation engines provide separate analysis.
